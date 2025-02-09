@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchCourses, fetchProgress, Course, Progress } from "../../utils/api";
+import { fetchCourses, fetchLessons, fetchProgress, Course, Lesson, Progress } from "../../utils/api";
 
 export default function Dashboard() {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [progressData, setProgressData] = useState<{ [key: string]: Progress }>({});
+  const [lessonData, setLessonData] = useState<{ [courseId: string]: Lesson[] }>({});
+  const [progressData, setProgressData] = useState<{ [lessonId: string]: Progress | null }>({});
   const [user, setUser] = useState<{ id: string; name: string; role: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,27 +21,49 @@ export default function Dashboard() {
     }
 
     fetchCourses()
-      .then((data) => {
-        setCourses(data);
-        if (data.length === 0) {
+      .then((coursesData) => {
+        console.log("✅ Courses received:", coursesData);
+        setCourses(coursesData);
+
+        if (coursesData.length === 0) {
           setLoading(false);
           return;
         }
 
         return Promise.all(
-          data.map((course) =>
-            fetchProgress(course.id, token)
-              .then((progress) => ({ courseId: course.id, progress }))
-              .catch(() => ({ courseId: course.id, progress: null }))
+          coursesData.map((course) =>
+            fetchLessons(course.id, token)
+              .then((lessons) => ({ courseId: course.id, lessons }))
+              .catch(() => ({ courseId: course.id, lessons: [] }))
+          )
+        );
+      })
+      .then((lessonsResults) => {
+        if (!lessonsResults) return;
+
+        const lessonsMap: { [courseId: string]: Lesson[] } = {};
+        lessonsResults.forEach(({ courseId, lessons }) => {
+          lessonsMap[courseId] = lessons;
+        });
+
+        setLessonData(lessonsMap);
+
+        const allLessonIds = lessonsResults.flatMap(({ lessons }) => lessons.map((lesson) => lesson.id));
+
+        return Promise.all(
+          allLessonIds.map((lessonId) =>
+            fetchProgress(lessonId, token)
+              .then((progress) => ({ lessonId, progress }))
+              .catch(() => ({ lessonId, progress: null }))
           )
         );
       })
       .then((progressResults) => {
         if (!progressResults) return;
 
-        const progressMap: { [key: string]: Progress | null } = {};
-        progressResults.forEach(({ courseId, progress }) => {
-          progressMap[courseId] = progress;
+        const progressMap: { [lessonId: string]: Progress | null } = {};
+        progressResults.forEach(({ lessonId, progress }) => {
+          progressMap[lessonId] = progress;
         });
 
         setProgressData(progressMap);
@@ -79,27 +102,52 @@ export default function Dashboard() {
         ) : (
           <ul className="space-y-4">
             {courses.map((course) => {
-              const progress = progressData[course.id];
+              const lessons = lessonData[course.id] || [];
+
               return (
-                <li
-                  key={course.id}
-                  className="bg-gray-700 p-4 rounded-lg shadow-lg flex justify-between items-center"
-                >
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">{course.title}</h3>
-                    <p className="text-sm text-gray-300">{course.description}</p>
-                    {progress !== null && (
-                      <p className="text-sm font-medium text-green-400">
-                        Progress: {progress.progressPercentage}%
-                      </p>
-                    )}
+                <li key={course.id} className="bg-gray-700 p-4 rounded-lg shadow-lg">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">{course.title}</h3>
+                      <p className="text-sm text-gray-300">{course.description}</p>
+                    </div>
+                    <button
+                      onClick={() => router.push(`/courses/${course.id}`)}
+                      className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
+                    >
+                      View Course
+                    </button>
                   </div>
-                  <a
-                    href={`/courses/${course.id}`}
-                    className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
-                  >
-                    View Course
-                  </a>
+
+                  <ul className="mt-3 space-y-2">
+                    {lessons.length === 0 ? (
+                      <p className="text-gray-400">No lessons available.</p>
+                    ) : (
+                      lessons.map((lesson) => {
+                        const progress = progressData[lesson.id];
+
+                        return (
+                          <li key={lesson.id} className="bg-gray-600 p-3 rounded-lg shadow flex justify-between items-center">
+                            <div>
+                              <h4 className="text-md font-medium text-white">{lesson.title}</h4>
+                              <p className="text-sm text-gray-300">{lesson.description}</p>
+                              {progress !== null && (
+                                <p className="text-sm font-medium text-green-400">
+                                  Progress: {progress?.progressPercentage || 0}%
+                                </p>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => router.push(`/lessons/${lesson.id}`)}
+                              className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition"
+                            >
+                              View Lesson
+                            </button>
+                          </li>
+                        );
+                      })
+                    )}
+                  </ul>
                 </li>
               );
             })}

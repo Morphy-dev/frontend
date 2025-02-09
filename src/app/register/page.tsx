@@ -23,7 +23,6 @@ export default function Dashboard() {
     try {
       const storedUser = localStorage.getItem("user");
 
-      // ✅ FIX: Check if user exists before parsing JSON
       if (storedUser && storedUser !== "undefined" && storedUser !== "null") {
         setUser(JSON.parse(storedUser));
       } else {

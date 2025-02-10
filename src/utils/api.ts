@@ -158,5 +158,15 @@ export const registerUser = (name: string, email: string, password: string, role
 /**
  * Fetch a single lesson by ID
  */
-export const fetchLesson = (lessonId: string, token: string): Promise<Lesson> =>
-  fetchApi<Lesson>(`/api/lessons/${lessonId}`, "GET", token);
+export const fetchLesson = (lessonId: string,): Promise<Lesson> =>
+  fetchApi<Lesson>(`/api/lessons/${lessonId}`, "GET");
+
+export const updateLessonProgress = (lessonId: string, progress: number, token: string) =>
+  fetchApi(`/api/progress/${lessonId}`, "PUT", token, { progress });
+
+
+export const markLessonComplete = (lessonId: string, token: string) =>
+  fetchApi(`/api/progress/${lessonId}`, "POST", token);
+
+export const unmarkLessonComplete = (lessonId: string, token: string) =>
+  fetchApi(`/api/progress/${lessonId}`, "DELETE", token);

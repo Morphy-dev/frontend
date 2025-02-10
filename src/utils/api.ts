@@ -127,11 +127,8 @@ export const fetchProgress = async (lessonId: string, token: string): Promise<Pr
   try {
     return await fetchApi<Progress>(`/api/progress/${lessonId}`, "GET", token);
   } catch (error) {
-    if (error.message.includes("404")) {
-      console.warn(`⚠️ No progress found for lesson ${lessonId}, returning null.`);
-      return null; // ✅ Return null instead of throwing an error
-    }
-    throw error; // Only throw if it's another error
+    console.warn(`⚠️ No progress found for lesson ${lessonId}, treating as "Not Started"`);
+    return null; 
   }
 };
 
@@ -161,12 +158,50 @@ export const registerUser = (name: string, email: string, password: string, role
 export const fetchLesson = (lessonId: string,): Promise<Lesson> =>
   fetchApi<Lesson>(`/api/lessons/${lessonId}`, "GET");
 
-export const updateLessonProgress = (lessonId: string, progress: number, token: string) =>
-  fetchApi(`/api/progress/${lessonId}`, "PUT", token, { progress });
-
 
 export const markLessonComplete = (lessonId: string, token: string) =>
   fetchApi(`/api/progress/${lessonId}`, "POST", token);
 
 export const unmarkLessonComplete = (lessonId: string, token: string) =>
   fetchApi(`/api/progress/${lessonId}`, "DELETE", token);
+
+/**
+ * Update lesson progress
+ */
+export const updateLessonProgress = async (lessonId: string, progressPercentage: number, token: string): Promise<void> => {
+  const url = `${API_URL}/api/progress/${lessonId}`;
+  console.log(`📡 Updating progress for lesson ${lessonId} to ${progressPercentage}%`);
+
+  try {
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ progressPercentage }),
+    });
+
+    if (!res.ok) {
+      console.error(`❌ Error updating progress:`, await res.text());
+      throw new Error("Failed to update progress");
+    }
+
+    console.log(`✅ Progress updated successfully`);
+  } catch (error) {
+    console.error(`❌ Fetch Error:`, error);
+    throw new Error("Network error or invalid response");
+  }
+};
+
+
+export const createLessonProgress = (
+  lessonId: string,
+  token: string
+): Promise<Progress> =>
+  fetchApi<Progress>(
+    `/api/progress/${lessonId}`,
+    "POST",
+    token,
+    { progressPercentage: 0 }
+  );

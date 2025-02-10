@@ -74,7 +74,14 @@ export default function CoursePage() {
         ) : (
           <p className="text-gray-400 mt-4">No lessons available for this course.</p>
         )}
+         <button
+          onClick={() => router.back()}
+          className="mt-4 text-blue-400 underline"
+        >
+          ← Back to all Courses
+        </button>
       </div>
+      
     </div>
   );
 }

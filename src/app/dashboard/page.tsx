@@ -131,7 +131,8 @@ export default function Dashboard() {
                             <div>
                               <h4 className="text-md font-medium text-white">{lesson.title}</h4>
                               <p className="text-sm text-gray-300">{lesson.description}</p>
-                              {progress !== null && (
+                              {progress == null ? (  <p className="text-yellow-400">Not Started</p>
+): (
                                 <p className="text-sm font-medium text-green-400">
                                   Progress: {progress?.progressPercentage || 0}%
                                 </p>

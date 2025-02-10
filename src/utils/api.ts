@@ -45,25 +45,41 @@ export interface User {
 const fetchApi = async <T>(
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "DELETE",
-  token?: string,
+  token?: string | null,
   body?: object
 ): Promise<T> => {
   const url = `${API_URL}${endpoint}`;
   console.log(`📡 API Call: ${method} ${url}`);
 
+  // Don't require a token for login or register
+  const authToken = token ?? localStorage.getItem("token");
+  const isAuthRoute = endpoint.includes("/auth/login") || endpoint.includes("/auth/register");
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (authToken && !isAuthRoute) {
+    headers.Authorization = `Bearer ${authToken}`;
+  }
+
   try {
     const res = await fetch(url, {
       method,
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
+      headers,
       body: body ? JSON.stringify(body) : undefined,
     });
 
     if (!res.ok) {
       const errorText = await res.text();
       console.error(`❌ API Error [${method} ${url}]:`, errorText);
+
+      if (res.status === 401 && !isAuthRoute) {
+        console.warn("⚠️ Token expired or invalid. Logging out...");
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+
       throw new Error(`Error ${res.status}: ${res.statusText}`);
     }
 
@@ -76,48 +92,71 @@ const fetchApi = async <T>(
   }
 };
 
+
 /**
  * Fetch logged-in user details
  */
-export const fetchUser = (token: string): Promise<User> => fetchApi<User>("/api/auth/user", "GET", token);
+export const fetchUser = (): Promise<User> => fetchApi<User>("/api/auth/user", "GET");
 
 /**
  * Fetch all courses
  */
-export const fetchCourses = (token: string): Promise<Course[]> => fetchApi<Course[]>("/api/courses", "GET", token);
+export const fetchCourses = (): Promise<Course[]> => fetchApi<Course[]>("/api/courses", "GET");
 
 /**
  * Fetch course details by ID
  */
-export const fetchCourse = (courseId: string, token: string): Promise<Course> =>
-  fetchApi<Course>(`/api/courses/${courseId}`, "GET", token);
+export const fetchCourse = (courseId: string): Promise<Course> =>
+  fetchApi<Course>(`/api/courses/${courseId}`, "GET");
 
 /**
  * Fetch lessons for a given course
  */
-export const fetchLessons = (courseId: string, token: string): Promise<Lesson[]> =>
-  fetchApi<Lesson[]>(`/api/courses/${courseId}/lessons`, "GET", token);
+export const fetchLessons = (courseId: string): Promise<Lesson[]> =>
+  fetchApi<Lesson[]>(`/api/courses/${courseId}/lessons`, "GET");
 
 /**
  * Fetch progress for a specific lesson
  */
-export const fetchProgress = (lessonId: string, token: string): Promise<Progress> => {
+export const fetchProgress = async (lessonId: string, token: string): Promise<Progress | null> => {
   if (!lessonId) {
     console.error("❌ fetchProgress called with an undefined lessonId");
     throw new Error("Invalid lessonId");
   }
 
-  return fetchApi<Progress>(`/api/progress/${lessonId}`, "GET", token);
+  try {
+    return await fetchApi<Progress>(`/api/progress/${lessonId}`, "GET", token);
+  } catch (error) {
+    if (error.message.includes("404")) {
+      console.warn(`⚠️ No progress found for lesson ${lessonId}, returning null.`);
+      return null; // ✅ Return null instead of throwing an error
+    }
+    throw error; // Only throw if it's another error
+  }
 };
 
 /**
  * User login
  */
-export const loginUser = (email: string, password: string) =>
-  fetchApi<{ token: string }>("/api/auth/login", "POST", undefined, { email, password });
+export const loginUser = async (email: string, password: string) => {
+  const response = await fetchApi<{ token: string }>("/api/auth/login", "POST", undefined, { email, password });
+
+  // Save the token on successful login
+  localStorage.setItem("token", response.token);
+  console.log("🔐 Token stored:", response.token);
+
+  return response;
+};
+
 
 /**
  * User registration
  */
 export const registerUser = (name: string, email: string, password: string, role: string) =>
   fetchApi<{ message: string }>("/api/auth/register", "POST", undefined, { name, email, password, role });
+
+/**
+ * Fetch a single lesson by ID
+ */
+export const fetchLesson = (lessonId: string, token: string): Promise<Lesson> =>
+  fetchApi<Lesson>(`/api/lessons/${lessonId}`, "GET", token);

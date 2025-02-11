@@ -39,7 +39,10 @@ export default function Dashboard() {
         );
       })
       .then((lessonsResults) => {
-        if (!lessonsResults) return;
+        if (!lessonsResults) {
+            router.replace("/login");
+            return;
+        };
 
         const lessonsMap: { [courseId: string]: Lesson[] } = {};
         lessonsResults.forEach(({ courseId, lessons }) => {

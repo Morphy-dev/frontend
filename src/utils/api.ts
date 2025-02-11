@@ -112,8 +112,15 @@ export const fetchCourse = (courseId: string): Promise<Course> =>
 /**
  * Fetch lessons for a given course
  */
-export const fetchLessons = (courseId: string): Promise<Lesson[]> =>
-  fetchApi<Lesson[]>(`/api/courses/${courseId}/lessons`, "GET");
+export const fetchLessons = (courseId: string, token?: string): Promise<Lesson[]> =>
+  fetchApi<Lesson[]>(`/api/courses/${courseId}/lessons`, "GET", token);
+
+/**
+ * Fetch a single lesson by ID
+ */
+export const fetchLesson = (lessonId: string, token?: string): Promise<Lesson> =>
+  fetchApi<Lesson>(`/api/lessons/${lessonId}`, "GET", token);
+
 
 /**
  * Fetch progress for a specific lesson
@@ -152,11 +159,6 @@ export const loginUser = async (email: string, password: string) => {
 export const registerUser = (name: string, email: string, password: string, role: string) =>
   fetchApi<{ message: string }>("/api/auth/register", "POST", undefined, { name, email, password, role });
 
-/**
- * Fetch a single lesson by ID
- */
-export const fetchLesson = (lessonId: string,): Promise<Lesson> =>
-  fetchApi<Lesson>(`/api/lessons/${lessonId}`, "GET");
 
 
 export const markLessonComplete = (lessonId: string, token: string) =>

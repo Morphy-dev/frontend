@@ -1,0 +1,137 @@
+/* src/Stage1.css */
+
+.stage1-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #000; /* just to fill any gaps */
+  }
+  
+  /* Example layering for background images */
+  .bg-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+  
+  .layer1 {
+    z-index: 1;
+  }
+  
+  .layer2 {
+    z-index: 2;
+  }
+  
+  /* Morphy image absolute at 0,0 by default; we move it with transform */
+  .morphy {
+    position: absolute;
+    width: 100px; /* adapt to suit */
+    height: auto;
+    z-index: 10; /* above background */
+    transform: translate(0, 0);
+    bottom: 100%;
+    left:10%;
+  }
+  
+  /* Keep the SVG hidden or in the top-left corner, 
+     because we only need the path geometry */
+  .morphy-path-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  /* Caption bar at bottom */
+  .caption {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 1.25rem;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    padding: 1rem;
+  }
+  
+  /* Optional debug readout for animation progress */
+  .debug-progress {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #fff;
+    font-size: 1rem;
+  }
+  
+  .stage1-container, .stage3-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #000;
+  }
+  
+  /* Background and Overlay */
+  .bg-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+  
+  .layer1 {
+    z-index: 1;
+  }
+  
+  .layer2 {
+    z-index: 2;
+  }
+  
+  /* Morphy (Stage 3 - In Front) */
+  .morphy-right {
+    position: absolute;
+    top: 30%;
+    right: 10%;
+    width: 100px;
+    height: auto;
+    z-index: 5;
+    transform: translate(0, 0);
+    animation: floatUpDown 3s infinite ease-in-out;
+  }
+  
+  /* Floating animation */
+  @keyframes floatUpDown {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(0, -15px); }
+    100% { transform: translate(0, 0); }
+  }
+  
+  /* Tala - Larger & Positioned Higher */
+  .tala-entering {
+    position: absolute;
+    left: 50%;
+    width: 150px;
+    height: auto;
+    opacity: 0;
+    transform: translate(-50%, 120%);
+    z-index: 4;
+  }
+  
+  /* Caption Bar */
+  .caption {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    padding: 1rem;
+    font-size: 1.25rem;
+    z-index: 6;
+  }
+  

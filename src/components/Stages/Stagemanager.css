@@ -1,0 +1,39 @@
+.scene-manager {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  /* Green Arrow Button */
+  .next-arrow {
+    position: absolute;
+    right: 20px; /* Moves it to the left */
+    top: 50%;
+    transform: translateY(-50%); /* Centers it vertically */
+    padding: 10px;
+    font-size: 50px;
+    border: none;
+    background-color: transparent ; /* Green color */
+    color: green;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+  }
+  
+  .next-arrow:hover {
+    background-color: #218838;
+    transform: translateY(-50%) scale(1.1);
+  }
+  
+  .next-arrow:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+  }
+  

@@ -3,7 +3,7 @@ import Stage1 from "./Stage1";
 import Stage2 from "./Stage2";
 import Stage3 from "./Stage3";
 import "./Stagemanager.css"; // Styles for navigation buttons
-import { FaArrowRight } from "react-icons/fa";
+import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
 
 const StageManager: React.FC = () => {
   const [sceneIndex, setSceneIndex] = useState(0);
@@ -18,8 +18,18 @@ const StageManager: React.FC = () => {
     }
   };
 
+  const goPrev = () => {
+    if (sceneIndex >0) {
+      setSceneIndex(sceneIndex - 1);
+    }
+  };
+
   return (
     <div className="scene-manager">
+       {/* Preb Button */}
+       <button onClick={goPrev} className="prev-arrow" disabled={sceneIndex === 0}>
+        <FaArrowLeft />
+      </button>
       {scenes[sceneIndex]}
 
       {/* Next Button */}

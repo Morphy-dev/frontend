@@ -1,9 +1,18 @@
 .scene-manager {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-  }
+  position: absolute; /* Ensures full control over positioning */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Centers exactly in the viewport */
+  
+  width: 100vw; /* Ensures full width of the viewport */
+  height: 100vh; /* Ensures full height of the viewport */
+  
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  background-color: #000; /* Fallback background */
+}
+
   
   /* Green Arrow Button */
   .next-arrow {
@@ -33,6 +42,38 @@
   }
   
   .next-arrow:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+  }
+  
+   /* Green Arrow Button */
+   .prev-arrow {
+    position: absolute;
+    left: 20px; /* Moves it to the left */
+    top: 50%;
+    transform: translateY(-50%); /* Centers it vertically */
+    padding: 10px;
+    font-size: 50px;
+    border: none;
+    background-color: transparent ; /* Green color */
+    color: green;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+  }
+  
+  .prev-arrow:hover {
+    background-color: #218838;
+    transform: translateY(-50%) scale(1.1);
+  }
+  
+  .prev-arrow:disabled {
     background-color: #666;
     cursor: not-allowed;
   }

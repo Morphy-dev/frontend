@@ -1,4 +1,3 @@
-// src/components/Stage1.tsx
 import React, { useRef, useEffect } from 'react';
 
 // 1) Import the PNG/JPG images normally
@@ -61,7 +60,7 @@ const Stage1: React.FC = () => {
       const t = Math.min(elapsed / duration, 1); // from 0..1
 
       // Get the point (x,y) along the path at fraction t
-      const point = pathElement?.getPointAtLength(pathLength * t) || 0;
+      const point = pathElement?.getPointAtLength(pathLength * t) || new DOMPoint(0, 0);
 
       // Move the butterfly to that (x,y). 
       // Right now it's placing top-left corner at the point.

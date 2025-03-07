@@ -1,0 +1,149 @@
+/* Full-screen container */
+.form-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    width: 100vw;
+    background-color: #f9fafb; /* Light gray background */
+  }
+  
+  /* Main content wrapper */
+  .form-wrapper {
+    width: 100%;
+    max-width: 450px; /* Keeps form compact */
+    padding: 40px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+  }
+  
+  /* Form title */
+  .form-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1f2937;
+    text-align: center;
+  }
+  
+  /* Form input fields */
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #1f2937;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f3f4f6;
+    font-size: 14px;
+    color: #1f2937;
+    transition: border 0.2s;
+  }
+  
+  .form-input:focus {
+    border-color: #4f46e5;
+    outline: none;
+  }
+  
+  /* Remember me and forgot password */
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+  }
+  
+  .form-remember {
+    font-size: 14px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+  }
+  
+  .form-checkbox {
+    margin-right: 6px;
+    width: 16px;
+    height: 16px;
+  }
+  
+  .form-link {
+    font-size: 14px;
+    font-weight: 600;
+    color: #4f46e5;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  
+  .form-link:hover {
+    color: #4338ca;
+  }
+  
+  /* Submit button */
+  .form-button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    background: #4f46e5;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .form-button:hover {
+    background: #4338ca;
+  }
+  
+  /* Form footer */
+  .form-footer {
+    font-size: 14px;
+    color: #6b7280;
+    text-align: center;
+    margin-top: 16px;
+  }
+  .login-error-popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #dbeafe; /* Light blue */
+    color: #1e40af; /* Dark blue text */
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.3s ease-in-out, fadeOut 0.3s ease-in-out 2.7s;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+  

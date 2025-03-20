@@ -42,3 +42,9 @@
 .read-the-docs {
   color: #888;
 }
+
+button, svg, img {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}

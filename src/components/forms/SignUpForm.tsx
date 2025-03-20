@@ -31,24 +31,27 @@ const SignUpForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-
+    console.log('eerer')
     try {
-      const formData = new URLSearchParams();
-      formData.append("full_name", fullName);
-      formData.append("email", email);
-      formData.append("cellphone", cellphone);
-      formData.append("password", password);
-      formData.append("institution_id", institution);
-
+      console.log('urururu')
+      const formData = {
+        full_name: fullName,
+        email,
+        cellphone,
+        password,
+        school_id: institution,
+        role: 'teacher'
+      };
+      console.log(formData)
       const response = await axios.post(`${API_BASE_URL}/auth/register`, formData, {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: { "Content-Type": "application/json" },
       });
 
       console.log("Registration successful", response.data);
-      navigate("/onboarding"); // Redirect on success
+      navigate("/dashboard"); // Redirect on success
     } catch (err) {
       console.error("Registration failed", err);
-      setError("Error en el registro. Verifica tus datos.");
+      setError(err.msg || 'registro fallido');
     }
   };
 

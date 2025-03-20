@@ -1,96 +1,98 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./SignUpForm.css";
+import "./SignInForm.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
-const SignUpForm = () => {
+const SignInForm = () => {
   const navigate = useNavigate();
-  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [cellphone, setCellphone] = useState("");
   const [password, setPassword] = useState("");
-  const [institution, setInstitution] = useState("");
-  const [institutions, setInstitutions] = useState([]);
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState(null);
-
-  useEffect(() => {
-    // Fetch schools from API
-    const fetchSchools = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/schools`);
-        setInstitutions(response.data);
-      } catch (err) {
-        console.error("Error fetching schools", err);
-      }
-    };
-    fetchSchools();
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    console.log('eerer')
+    
     try {
-      console.log('urururu')
-      const formData = {
-        full_name: fullName,
-        email,
-        cellphone,
-        password,
-        school_id: institution,
-        role: 'teacher'
-      };
-      const response = await axios.post(`${API_BASE_URL}/auth/register`, formData, {
-        headers: { "Content-Type": "application/json" },
+      const formData = new URLSearchParams();
+      formData.append("username", email);
+      formData.append("password", password);
+      
+      const response = await axios.post(`${API_BASE_URL}/auth/login`, formData, {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
-
-      console.log("Registration successful", response.data);
-      navigate("/onboarding"); // Redirect on success
+      
+      console.log("Login successful", response.data);
+      navigate("/dashboard"); // Redirect on success
     } catch (err) {
-        console.log('herere', formData)
-      console.error("Registration failed", err, FormData);
-      setError("Error en el registro. Verifica tus datos.");
+      console.error("Login failed", err);
+      setError("Tus datos son incorrectos, valida tu correo/contraseña.");
+      
+      // Show popup
+      const popup = document.createElement("div");
+      popup.innerText = "❌ Tus datos son incorrectos, valida tu correo/contraseña.";
+      popup.className = "login-error-popup";
+      document.body.appendChild(popup);
+      
+      setTimeout(() => {
+        popup.remove();
+      }, 3000);
     }
   };
 
   return (
     <div className="form-container">
       <div className="form-wrapper">
-        <h1 className="form-title">Regístrate</h1>
+        <h1 className="form-title">Iniciar sesión en tu cuenta</h1>
         {error && <p className="form-error">{error}</p>}
         <form className="form-content" onSubmit={handleSubmit}>
           <div>
-            <label className="form-label">Nombre completo</label>
-            <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className="form-input" required />
+            <label htmlFor="email" className="form-label">Tu correo electrónico</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="form-input"
+              placeholder="nombre@empresa.com"
+              required
+            />
           </div>
           <div>
-            <label className="form-label">Correo electrónico</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="form-input" required />
+            <label htmlFor="password" className="form-label">Contraseña</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="form-input"
+              placeholder="••••••••"
+              required
+            />
           </div>
-          <div>
-            <label className="form-label">Teléfono celular</label>
-            <input type="tel" value={cellphone} onChange={(e) => setCellphone(e.target.value)} className="form-input" required />
+          <div className="form-options">
+            <label className="form-remember">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={() => setRememberMe(!rememberMe)}
+                className="form-checkbox"
+              />
+              Recuérdame
+            </label>
+            <a href="#" className="form-link">¿Olvidaste tu contraseña?</a>
           </div>
-          <div>
-            <label className="form-label">Institución</label>
-            <select value={institution} onChange={(e) => setInstitution(e.target.value)} className="form-input" required>
-              <option value="" disabled>Selecciona una institución</option>
-              {institutions.map((school) => (
-                <option key={school.id} value={school.id}>{school.name}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="form-label">Contraseña</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="form-input" required />
-          </div>
-          <button type="submit" className="form-button">Registrarse</button>
+          <button type="submit" className="form-button">Iniciar sesión</button>
+          <p className="form-footer">
+            ¿No tienes una cuenta? <a href="/register" className="form-link">Regístrate</a>
+          </p>
         </form>
       </div>
     </div>
   );
 };
 
-export default SignUpForm;
+export default SignInForm;
